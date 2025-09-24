@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matkai Travel Expenses</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00bcd4">
     <style>
         * {
             margin: 0;
@@ -110,57 +112,41 @@
             font-size: 14px;
         }
 
-        /* BUTTON BASE STYLE */
-        .btn {
-            flex: 1;
-            padding: 16px 20px;
-            border: none;
-            border-radius: 50px; /* pill shape */
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
         }
 
-        /* PRIMARY BUTTON */
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
         .btn-primary {
-            background: linear-gradient(135deg, #00bcd4 0%, #00838f 100%);
+            background: linear-gradient(135deg, #00acc1 0%, #0097a7 100%);
             color: white;
         }
 
         .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 172, 193, 0.3);
         }
 
-        .btn-primary:active {
-            transform: translateY(1px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        /* SECONDARY BUTTON */
         .btn-secondary {
-            background: linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%);
+            background: linear-gradient(135deg, #d7ccc8 0%, #bcaaa4 100%);
             color: #000;
         }
 
         .btn-secondary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-secondary:active {
-            transform: translateY(1px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        /* BUTTON GROUP ON MOBILE */
-        @media (max-width: 480px) {
-            .button-group {
-                flex-direction: column;
-                gap: 12px;
-            }
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(188, 170, 164, 0.3);
         }
 
         .expenses-section {
@@ -229,6 +215,18 @@
         .receipt-indicator {
             color: #4caf50;
             font-weight: bold;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -308,6 +306,7 @@
     <script>
         let expenses = [];
 
+        // Load expenses from localStorage on page load
         window.addEventListener('load', function() {
             loadExpenses();
             setDefaultDate();
@@ -320,11 +319,12 @@
         }
 
         function loadExpenses() {
-            expenses = window.savedExpenses || [];
+            const saved = localStorage.getItem('expenses');
+            expenses = saved ? JSON.parse(saved) : [];
         }
 
         function saveExpenses() {
-            window.savedExpenses = expenses;
+            localStorage.setItem('expenses', JSON.stringify(expenses));
         }
 
         document.getElementById('expenseForm').addEventListener('submit', function(e) {
@@ -345,6 +345,7 @@
             updateDisplay();
             clearForm();
             
+            // Show success message
             showNotification('Expense saved successfully');
         });
 
@@ -366,8 +367,10 @@
                 return;
             }
             
+            // Show total section
             totalSection.style.display = 'block';
             
+            // Calculate totals by currency
             const currencyTotals = {};
             expenses.forEach(expense => {
                 if (!currencyTotals[expense.currency]) {
@@ -376,11 +379,13 @@
                 currencyTotals[expense.currency] += expense.amount;
             });
             
+            // Display separate totals for each currency
             const totalText = Object.entries(currencyTotals)
                 .map(([currency, total]) => `${total.toFixed(2)} ${currency}`)
                 .join(' • ');
             totalAmount.textContent = totalText;
             
+            // Display expenses
             expensesList.innerHTML = expenses
                 .sort((a, b) => new Date(b.date) - new Date(a.date))
                 .map(expense => `
@@ -455,8 +460,12 @@
                 z-index: 1000;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             `;
+            
             document.body.appendChild(notification);
-            setTimeout(() => { notification.remove(); }, 3000);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
         }
     </script>
 </body>
