@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matkai Travel Expenses</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa 0%, #f5f5dc 100%);
+            color: #000;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #b2ebf2 0%, #d7ccc8 100%);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #e0f7fa;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .form-section {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="date"],
+        input[type="number"],
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #b2ebf2;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #fafafa;
+            transition: all 0.3s ease;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #00acc1;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(0, 172, 193, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f0f8ff;
+            border-radius: 8px;
+            border: 2px solid #b2ebf2;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #00acc1;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00acc1 0%, #0097a7 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 172, 193, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #d7ccc8 0%, #bcaaa4 100%);
+            color: #000;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(188, 170, 164, 0.3);
+        }
+
+        .expenses-section {
+            padding: 0 20px 20px;
+        }
+
+        .expense-item {
+            background: rgba(224, 247, 250, 0.3);
+            border: 1px solid #b2ebf2;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .expense-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .expense-amount {
+            font-weight: bold;
+            font-size: 18px;
+            color: #00695c;
+        }
+
+        .expense-date {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .expense-details {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .expense-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .no-expenses {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .total-section {
+            background: linear-gradient(135deg, #b2ebf2 0%, #d7ccc8 100%);
+            padding: 15px 20px;
+            margin: 0 20px 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .total-amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00695c;
+        }
+
+        .receipt-indicator {
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Matkai Travel Expenses</h1>
+            <p>Track your spending on the go</p>
+        </div>
+
+        <div class="form-section">
+            <form id="expenseForm">
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="amount">Amount</label>
+                    <input type="number" id="amount" step="0.01" placeholder="0.00" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="details">Details</label>
+                    <textarea id="details" placeholder="What did you spend money on?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="currency">Currency</label>
+                    <select id="currency" required>
+                        <option value="USD">USD - US Dollar</option>
+                        <option value="CAD">CAD - Canadian Dollar</option>
+                        <option value="AUD">AUD - Australian Dollar</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="method">Payment Method</label>
+                    <select id="method" required>
+                        <option value="Cash">Cash</option>
+                        <option value="Credit Card">Credit Card</option>
+                        <option value="Wise Card">Wise Card</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="receipt" />
+                        <label for="receipt">Photo/scan of receipt taken</label>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">Save Expense</button>
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear</button>
+                </div>
+            </form>
+
+            <div class="button-group" style="margin-top: 20px;">
+                <button type="button" class="btn btn-secondary" onclick="downloadCSV()">Download CSV</button>
+                <button type="button" class="btn btn-secondary" onclick="clearAllData()">Delete All</button>
+            </div>
+        </div>
+
+        <div class="total-section" id="totalSection" style="display: none;">
+            <div>Total Expenses by Currency</div>
+            <div class="total-amount" id="totalAmount">$0.00</div>
+        </div>
+
+        <div class="expenses-section">
+            <div id="expensesList">
+                <div class="no-expenses">No expenses recorded yet</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let expenses = [];
+
+        // Load expenses from localStorage on page load
+        window.addEventListener('load', function() {
+            loadExpenses();
+            setDefaultDate();
+            updateDisplay();
+        });
+
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = today;
+        }
+
+        function loadExpenses() {
+            const saved = localStorage.getItem('expenses');
+            expenses = saved ? JSON.parse(saved) : [];
+        }
+
+        function saveExpenses() {
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+        }
+
+        document.getElementById('expenseForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const expense = {
+                id: Date.now(),
+                date: document.getElementById('date').value,
+                amount: parseFloat(document.getElementById('amount').value),
+                details: document.getElementById('details').value,
+                currency: document.getElementById('currency').value,
+                method: document.getElementById('method').value,
+                receipt: document.getElementById('receipt').checked
+            };
+            
+            expenses.push(expense);
+            saveExpenses();
+            updateDisplay();
+            clearForm();
+            
+            // Show success message
+            showNotification('Expense saved successfully');
+        });
+
+        function clearForm() {
+            if (confirm('Are you sure you want to clear the current form? Any unsaved information will be lost.')) {
+                document.getElementById('expenseForm').reset();
+                setDefaultDate();
+            }
+        }
+
+        function updateDisplay() {
+            const expensesList = document.getElementById('expensesList');
+            const totalSection = document.getElementById('totalSection');
+            const totalAmount = document.getElementById('totalAmount');
+            
+            if (expenses.length === 0) {
+                expensesList.innerHTML = '<div class="no-expenses">No expenses recorded yet</div>';
+                totalSection.style.display = 'none';
+                return;
+            }
+            
+            // Show total section
+            totalSection.style.display = 'block';
+            
+            // Calculate totals by currency
+            const currencyTotals = {};
+            expenses.forEach(expense => {
+                if (!currencyTotals[expense.currency]) {
+                    currencyTotals[expense.currency] = 0;
+                }
+                currencyTotals[expense.currency] += expense.amount;
+            });
+            
+            // Display separate totals for each currency
+            const totalText = Object.entries(currencyTotals)
+                .map(([currency, total]) => `${total.toFixed(2)} ${currency}`)
+                .join(' • ');
+            totalAmount.textContent = totalText;
+            
+            // Display expenses
+            expensesList.innerHTML = expenses
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .map(expense => `
+                    <div class="expense-item">
+                        <div class="expense-header">
+                            <div class="expense-amount">${expense.amount.toFixed(2)} ${expense.currency}</div>
+                            <div class="expense-date">${new Date(expense.date).toLocaleDateString()}</div>
+                        </div>
+                        <div class="expense-details">${expense.details || 'No details'}</div>
+                        <div class="expense-meta">
+                            <span>${expense.method}</span>
+                            <span>${expense.receipt ? '<span class="receipt-indicator">Receipt</span>' : 'No receipt'}</span>
+                        </div>
+                    </div>
+                `).join('');
+        }
+
+        function downloadCSV() {
+            if (expenses.length === 0) {
+                showNotification('No expenses to download');
+                return;
+            }
+            
+            const headers = ['Date', 'Amount', 'Currency', 'Details', 'Method', 'Receipt'];
+            const csvContent = [
+                headers.join(','),
+                ...expenses.map(expense => [
+                    expense.date,
+                    expense.amount,
+                    expense.currency,
+                    `"${expense.details.replace(/"/g, '""')}"`,
+                    expense.method,
+                    expense.receipt ? 'Yes' : 'No'
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `travel_expenses_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('CSV downloaded successfully');
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ Are you sure you want to delete all expenses? This action cannot be undone and will permanently remove all your saved data.')) {
+                expenses = [];
+                saveExpenses();
+                updateDisplay();
+                showNotification('All expenses deleted successfully');
+            }
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #00acc1;
+                color: white;
+                padding: 12px 24px;
+                border-radius: 25px;
+                font-weight: 600;
+                z-index: 1000;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
